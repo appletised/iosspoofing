@@ -1,0 +1,20 @@
+name: SpooferClient
+options:
+  bundleIdPrefix: com.example
+targets:
+  SpooferClient:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources: [Sources]
+    info:
+      path: Info.plist
+      properties:
+        NSBluetoothAlwaysUsageDescription: "Connect to GPS Pi"
+        NSBluetoothPeripheralUsageDescription: "Connect to GPS Pi"
+        UIBackgroundModes: 
+          - bluetooth-central
+          - audio
+settings:
+  PRODUCT_BUNDLE_IDENTIFIER: com.example.SpooferClient
+  DEVELOPMENT_TEAM: "" 
