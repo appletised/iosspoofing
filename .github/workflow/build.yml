@@ -1,0 +1,42 @@
+name: Build IPA
+on: [push]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install XcodeGen
+        run: brew install xcodegen
+        
+      - name: Create Silence.wav
+        run: |
+          mkdir -p Sources/Resources
+          dd if=/dev/zero of=Sources/silence.wav bs=1 count=1000
+
+      - name: Generate Project
+        run: xcodegen generate
+        
+      - name: Build Archive
+        run: |
+          xcodebuild -project SpooferClient.xcodeproj \
+            -scheme SpooferClient \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath $PWD/build/SpooferClient.xcarchive \
+            archive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+            
+      - name: Export IPA
+        run: |
+          mkdir Payload
+          cp -r build/SpooferClient.xcarchive/Products/Applications/SpooferClient.app Payload/
+          zip -r SpooferClient.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: SpooferClient-IPA
+          path: SpooferClient.ipa
